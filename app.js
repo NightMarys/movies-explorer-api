@@ -4,7 +4,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const cors = require('./middlewares/cors');
-const limiter = require('./middlewares/rateLimit');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes/index');
 const { MONGO_URL_DEV } = require('./utils/constants');
@@ -20,8 +19,6 @@ mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : MONGO_URL_DEV);
 app.use(cors);
 
 app.use(requestLogger);
-
-app.use(limiter);
 
 app.use(router);
 app.use(errorLogger);
