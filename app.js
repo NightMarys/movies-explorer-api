@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const helmet = require('helmet');
 
 const mongoose = require('mongoose');
 
@@ -22,7 +21,6 @@ app.use(cors);
 
 app.use(requestLogger);
 
-app.use(helmet());
 app.use(limiter);
 
 app.use(router);
