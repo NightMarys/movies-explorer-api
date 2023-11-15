@@ -251,16 +251,11 @@ function App(props) {
               <Route
                 path={mainPath}
                 element={
-                  <ProtectedRoute
-                    loggedIn={loggedIn}
-                    element={
-                      <>
-                        <Header openMenu={openBurgerMenu} />
-                        <Main loggedIn={loggedIn} />
-                        <Footer />
-                      </>
-                    }
-                  />
+                  <>
+                    <Header openMenu={openBurgerMenu} />
+                    <Main />
+                    <Footer />
+                  </>
                 }
               />
               <Route
