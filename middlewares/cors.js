@@ -1,9 +1,9 @@
 const allowedCors = [
   'localhost:3000',
-  'https://api.thatsmovies.nomoredomainsrocks.ru/',
-  'http://api.thatsmovies.nomoredomainsrocks.ru/',
-  'https://thatsmovies.nomoredomainsrocks.ru/',
-  'http://thatsmovies.nomoredomainsrocks.ru/',
+  'https://api.thatsmovies.nomoredomainsrocks.ru',
+  'http://api.thatsmovies.nomoredomainsrocks.ru',
+  'https://thatsmovies.nomoredomainsrocks.ru',
+  'http://thatsmovies.nomoredomainsrocks.ru',
 ];
 
 module.exports = (req, res, next) => {
