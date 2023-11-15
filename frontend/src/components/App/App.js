@@ -74,8 +74,45 @@ function App(props) {
       }
   }, [loggedIn]);
 
+  const getMovies = () => {
+    moviesApi
+      .getMovies()
+      .then((movies) => {
+        setMovies(movies);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
+  useEffect(() => {
+    if (currentUser.isLoggedIn) {
+      getMovies();
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
+  }, [currentUser.isLoggedIn]);
 
+  const getSavedMovies = () => {
+    api
+      .getMovies()
+      .then((movies) => {
+        setSavedMovies(movies);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (currentUser.isLoggedIn) {
+      getSavedMovies();
+    }
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, [currentUser.isLoggedIn]);
 /*
   useEffect(() => {
     if (loggedIn) {
