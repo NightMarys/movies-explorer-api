@@ -243,110 +243,106 @@ function App(props) {
   return (
     <div className="page">
       <div className="page__container">
-        {isPreloaderActive ? (
-          <Preloader />
-        ) : (
-          <CurrentUserContext.Provider value={currentUser}>
-            <Routes>
-              <Route
-                path={mainPath}
-                element={
-                  <>
-                    <Header openMenu={openBurgerMenu} />
-                    <Main />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path={moviesPath}
-                element={
-                  <ProtectedRoute
-                    loggedIn={loggedIn}
-                    element={
-                      <>
-                        <Header openMenu={openBurgerMenu} />
-                        <Movies
-                          savedMovies={savedMovies}
-                          searchError={searchError}
-                          onSearch={handleSearchMovies}
-                          isLoading={isLoading}
-                          onMovieAdd={addMovie}
-                          onMovieDelete={handleDeleteMovie}
-                        />
-                        <Footer />
-                      </>
-                    }
-                  />
-                }
-              />
-              <Route
-                path={savedMoviesPath}
-                element={
-                  <ProtectedRoute
-                    loggedIn={loggedIn}
-                    element={
-                      <>
-                        <Header openMenu={openBurgerMenu} />
-                        <SavedMovies
-                          savedMovies={savedMovies}
-                          onMovieDelete={handleDeleteMovie}
-                        />
-                        <Footer />
-                      </>
-                    }
-                  />
-                }
-              />
-              <Route
-                path={profilePath}
-                element={
-                  <ProtectedRoute
-                    loggedIn={loggedIn}
-                    element={
-                      <>
-                        <Header openMenu={openBurgerMenu} />
-                        <Profile
-                          onLogOut={handleSignOut}
-                          onLoading={isLoading}
-                          onProfile={handleUpdateUser}
-                          requestError={requestError}
-                          onUpdate={successfulUpdate}
-                        />
-                      </>
-                    }
-                  />
-                }
-              />
-              <Route
-                path={registerPath}
-                element={
-                  <Register
-                    onRegister={handleRegistration}
-                    onLoading={isLoading}
-                    requestError={requestError}
-                    loggedIn={loggedIn}
-                  />
-                }
-              />
+        <CurrentUserContext.Provider value={currentUser}>
+          <Routes>
+            <Route
+              path={mainPath}
+              element={
+                <>
+                  <Header openMenu={openBurgerMenu} />
+                  <Main />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path={moviesPath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <Movies
+                        savedMovies={savedMovies}
+                        searchError={searchError}
+                        onSearch={handleSearchMovies}
+                        isLoading={isLoading}
+                        onMovieAdd={addMovie}
+                        onMovieDelete={handleDeleteMovie}
+                      />
+                      <Footer />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={savedMoviesPath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <SavedMovies
+                        savedMovies={savedMovies}
+                        onMovieDelete={handleDeleteMovie}
+                      />
+                      <Footer />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={profilePath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <Profile
+                        onLogOut={handleSignOut}
+                        onLoading={isLoading}
+                        onProfile={handleUpdateUser}
+                        requestError={requestError}
+                        onUpdate={successfulUpdate}
+                      />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={registerPath}
+              element={
+                <Register
+                  onRegister={handleRegistration}
+                  onLoading={isLoading}
+                  requestError={requestError}
+                  loggedIn={loggedIn}
+                />
+              }
+            />
 
-              <Route
-                path={loginPath}
-                element={
-                  <Login
-                    onLogin={handleLogIn}
-                    onLoading={isLoading}
-                    requestError={requestError}
-                    loggedIn={loggedIn}
-                  />
-                }
-              />
+            <Route
+              path={loginPath}
+              element={
+                <Login
+                  onLogin={handleLogIn}
+                  onLoading={isLoading}
+                  requestError={requestError}
+                  loggedIn={loggedIn}
+                />
+              }
+            />
 
-              <Route path={otherPath} element={<Error />} />
-            </Routes>
-            <BurgerMenu isOpen={isMenuOpen} onClose={closeBurgerMenu} />
-          </CurrentUserContext.Provider>
-        )}
+            <Route path={otherPath} element={<Error />} />
+          </Routes>
+          <BurgerMenu isOpen={isMenuOpen} onClose={closeBurgerMenu} />
+        </CurrentUserContext.Provider>
       </div>
     </div>
   );
