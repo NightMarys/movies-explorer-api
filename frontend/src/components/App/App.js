@@ -39,6 +39,7 @@ function App(props) {
   const [requestError, setRequestError] = useState("");
   const [successfulUpdate, setSuccessfulUpdate] = useState(false);
   const [searchError, setSearchError] = useState(false);
+  const [isPreloaderActive, setPreloaderClass] = useState(true);
 
   const navigate = useNavigate();
 
@@ -83,6 +84,9 @@ function App(props) {
           if (err === 401) {
             console.log("Переданный токен некорректен");
           }
+        })
+        .finally(() => {
+          setPreloaderClass(false);
         });
     }
   }, [navigate, loggedIn]);
@@ -239,7 +243,7 @@ function App(props) {
   return (
     <div className="page">
       <div className="page__container">
-        {isLoading ? (
+        {isPreloaderActive ? (
           <Preloader />
         ) : (
           <CurrentUserContext.Provider value={currentUser}>
