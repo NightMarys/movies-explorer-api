@@ -71,14 +71,11 @@ function App(props) {
           setCurrentUser(res)
         })
         .catch((err) => {console.log(err)});
-      api.getSavedMovies()
-        .then((res) => {
-          localStorage.setItem('SavedMovies', JSON.stringify(res))
-          setSavedMovies(JSON.parse(localStorage.getItem('SavedMovies')))
-        })
-        .catch((err) => {console.log(err)});
-    }
+      }
   }, [loggedIn]);
+
+
+
 /*
   useEffect(() => {
     if (loggedIn) {
