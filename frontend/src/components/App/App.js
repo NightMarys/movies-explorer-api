@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import "./App.css";
 import Header from "../Header/Header";
@@ -43,6 +43,43 @@ function App(props) {
 
   const navigate = useNavigate();
 
+  const handleTokenCheck = useCallback(async () => {
+    const token = localStorage.getItem('Authorized');
+    try {
+      if (token) {
+        const userData = await api.getContent(token);
+        if (userData) {
+          setLoggedIn(true);
+          setCurrentUser(userData);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPreloaderClass(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleTokenCheck();
+  }, [loggedIn, handleTokenCheck]);
+
+  useEffect(() => {
+    if (loggedIn) {
+      api.getUserInfo()
+        .then((res) => {
+          setCurrentUser(res)
+        })
+        .catch((err) => {console.log(err)});
+      api.getSavedMovies()
+        .then((res) => {
+          localStorage.setItem('SavedMovies', JSON.stringify(res))
+          setSavedMovies(JSON.parse(localStorage.getItem('SavedMovies')))
+        })
+        .catch((err) => {console.log(err)});
+    }
+  }, [loggedIn]);
+/*
   useEffect(() => {
     if (loggedIn) {
       api
@@ -55,7 +92,7 @@ function App(props) {
         });
       }
       }, [loggedIn]);
-        /*
+
       api
         .getSavedMovies()
         .then((res) => {
@@ -68,7 +105,7 @@ function App(props) {
 
     }
   }, [loggedIn]);
-   */
+
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -95,6 +132,7 @@ function App(props) {
         });
     }
   }, [navigate, loggedIn]);
+*/
 
   function handleLogIn(email, password) {
     setLoading(true);

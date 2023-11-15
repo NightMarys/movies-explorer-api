@@ -33,6 +33,19 @@ class Api {
     }).then(this._getResponse);
   }
 
+  getContent(token) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((res) => this._getResponse(res))
+    .then(data => data)
+  }
+
   getSavedMovies() {
     return fetch(`${this._baseUrl}/movies`, {
       method: "GET",
