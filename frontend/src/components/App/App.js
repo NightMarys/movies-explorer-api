@@ -142,7 +142,7 @@ function App(props) {
   }
 
   function handleSignOut() {
-    api
+    auth
       .logout()
       .then((res) => {
         setLoggedIn(false);
