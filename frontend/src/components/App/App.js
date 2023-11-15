@@ -53,6 +53,8 @@ function App(props) {
         .catch((err) => {
           console.log(err);
         });
+      }
+      }, [loggedIn]);
         /*
       api
         .getSavedMovies()
@@ -63,9 +65,10 @@ function App(props) {
         .catch((err) => {
           console.log(err);
         });
-        */
+
     }
   }, [loggedIn]);
+   */
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -76,7 +79,7 @@ function App(props) {
           if (data) {
             setLoggedIn(true);
             setCurrentUser(data);
-            navigate("/");
+            navigate("/movies");
           }
         })
         .catch((err) => {
