@@ -53,6 +53,7 @@ function App(props) {
         .catch((err) => {
           console.log(err);
         });
+        /*
       api
         .getSavedMovies()
         .then((res) => {
@@ -62,6 +63,7 @@ function App(props) {
         .catch((err) => {
           console.log(err);
         });
+        */
     }
   }, [loggedIn]);
 
