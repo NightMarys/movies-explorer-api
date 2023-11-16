@@ -206,6 +206,46 @@ const checkUser = () => {
   }, [navigate, loggedIn]);
 */
 
+const getMovies = () => {
+  moviesApi
+    .getMovies()
+    .then((movies) => {
+      setMovies(movies);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const getSavedMovies = () => {
+  api
+    .getMovies()
+    .then((movies) => {
+      setSavedMovies(movies);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+useEffect(() => {
+  if (currentUser.isLoggedIn) {
+    getSavedMovies();
+  }
+  setTimeout(() => {
+    setLoading(false);
+  }, 500);
+}, [currentUser.isLoggedIn]);
+
+useEffect(() => {
+  if (currentUser.isLoggedIn) {
+    getMovies();
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }
+}, [currentUser.isLoggedIn]);
+
   function handleLogIn(email, password) {
     setLoading(true);
     auth
@@ -254,6 +294,9 @@ const checkUser = () => {
       });
   }
 
+
+
+  /*
   function handleUpdateUser(name, email) {
     setLoading(true);
     api
@@ -335,7 +378,7 @@ const checkUser = () => {
         console.log(err);
       });
   }
-
+*/
   const openBurgerMenu = () => {
     setIsMenuOpen(true);
   };

@@ -4,6 +4,7 @@ import MoviesCardList from "../MoviesCardList/MoviesCardList";
 // import moviesList from "../../utils/moviesList";
 
 function Movies(props) {
+  /*
   const [initialMovies, setInitialMovies] = React.useState([]);
   const [foundMovies, setFoundMovies] = React.useState([]);
   const [moviesList, setMoviesList] = React.useState([]);
@@ -120,8 +121,7 @@ function Movies(props) {
     },
     [foundMovies]
   );
-
-  return (
+    return (
     <main className="content">
       <SearchForm
         onSubmit={handleSearchSubmit}
@@ -137,6 +137,21 @@ function Movies(props) {
         onMovieSave={props.onMovieSave}
         onMovieDelete={props.onMovieDelete}
         savedMovies={props.savedMovies}
+      />
+    </main>
+  );
+}
+
+export default Movies;
+*/
+
+  return (
+    <main className="content">
+      <SearchForm
+
+      />
+      <MoviesCardList
+
       />
     </main>
   );
