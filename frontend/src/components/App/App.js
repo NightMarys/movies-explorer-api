@@ -141,7 +141,7 @@ function App(props) {
       await handleLogIn({ email, password });
       navigate('/signin');
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setLoading(false)
     }
@@ -155,7 +155,7 @@ function App(props) {
       setLoggedIn(true);
       navigate('/movies');
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setLoading(false)
     }
@@ -176,7 +176,7 @@ function App(props) {
         JSON.stringify({ s: '', shorts: '' }),
       );
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setLoading(false)
     }
@@ -190,7 +190,7 @@ function App(props) {
       setCurrentUser(user);
       setIsProfileSaved(true);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
@@ -206,7 +206,7 @@ function App(props) {
         setSavedMovies([savedMovie]);
       }
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
@@ -221,7 +221,7 @@ function App(props) {
         setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
       }
     } catch (err) {
-      console.error(err);
+      console.log(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
