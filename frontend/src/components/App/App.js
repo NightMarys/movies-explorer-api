@@ -144,7 +144,7 @@ function App(props) {
       console.log({ e });
       setSearchError({ ...searchError, signUp: e });
     } finally {
-      isLoading(false);
+      setLoading(false)
     }
   };
 
@@ -158,7 +158,7 @@ function App(props) {
     } catch (e) {
       setSearchError({ ...searchError, signIn: e });
     } finally {
-      isLoading(false);
+      setLoading(false)
     }
   };
 
@@ -179,7 +179,7 @@ function App(props) {
     } catch (e) {
       console.log({ e });
     } finally {
-      isLoading(false);
+      setLoading(false)
     }
   };
 
@@ -193,7 +193,7 @@ function App(props) {
     } catch (e) {
       setSearchError({ ...searchError, profile: e });
     } finally {
-      setTimeout(() => isLoading(false), 500);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
@@ -208,7 +208,7 @@ function App(props) {
       }
     } catch (e) {
     } finally {
-      setTimeout(() => isLoading(false), 500);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
@@ -225,7 +225,7 @@ function App(props) {
       console.log({ e });
       setSearchError({ ...searchError, movies: e });
     } finally {
-      setTimeout(() => isLoading(false), 500);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
