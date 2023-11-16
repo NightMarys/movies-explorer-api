@@ -118,15 +118,22 @@ function App(props) {
   }, [currentUser.isLoggedIn]);
 */
 
-useEffect(() => {
-  if (loggedIn) {
-    api.getUserInfo()
-      .then((res) => {
-        setCurrentUser(res)
-      })
-      .catch((err) => {console.log(err)});
-    }
-}, [loggedIn]);
+
+const checkUser = () => {
+  api
+    .getUserInfo()
+    .then((user) => {
+      setCurrentUser({
+        name: user.name,
+        email: user.email,
+        isLoggedIn: true,
+      });
+    })
+    .catch((err) => {
+      setCurrentUser({ isLoggedIn: false });
+      console.log(err);
+    });
+};
 
 
       const getMovies = () => {
@@ -139,15 +146,6 @@ useEffect(() => {
             console.log(err);
           });
       };
-
-      useEffect(() => {
-        if (currentUser.isLoggedIn) {
-          getMovies();
-          setTimeout(() => {
-            setLoading(false);
-          }, 500);
-        }
-      }, [currentUser.isLoggedIn]);
 
       const getSavedMovies = () => {
         api
@@ -162,12 +160,22 @@ useEffect(() => {
 
       useEffect(() => {
         if (currentUser.isLoggedIn) {
+          checkUser();
           getSavedMovies();
         }
         setTimeout(() => {
           setLoading(false);
         }, 500);
-      }, [currentUser.isLoggedIn])
+      }, [currentUser.isLoggedIn]);
+
+      useEffect(() => {
+        if (currentUser.isLoggedIn) {
+          getMovies();
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
+        }
+      }, [currentUser.isLoggedIn]);
 
 
 
