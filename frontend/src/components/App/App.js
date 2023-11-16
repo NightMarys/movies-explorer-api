@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import Header from "../Header/Header";
 import Main from "../Main/Main";
@@ -40,9 +40,328 @@ function App(props) {
   const [successfulUpdate, setSuccessfulUpdate] = useState(false);
   const [searchError, setSearchError] = useState(false);
   const [isPreloaderActive, setPreloaderClass] = useState(true);
-
+  const [token, setToken] = useState(localStorage.getItem("jwt") || '');
+  const [isProfileSaved, setIsProfileSaved] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const parseJSON = (string, defaultValue) => {
+    try {
+
+      if (typeof string !== 'string') {
+        throw new Error('not a string')
+      }
+
+      return JSON.parse(string)
+    } catch (e) {
+      console.log({ e })
+      return defaultValue
+    }
+  }
+  useEffect(() => {
+    localStorage.setItem("jwt", token);
+  }, [token]);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        setLoading(true);
+        const user = await auth(token).me();
+        setCurrentUser(user);
+        setLoggedIn(true);
+        navigate(`${location.pathname}${location.search}`, { replace: true });
+      } catch (e) {
+        if (e.status === 404) {
+          localStorage.removeItem("jwt");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!loggedIn && token) {
+      checkToken();
+    }
+
+    setLoading(false);
+  }, [loggedIn, token]);
+
+
+
+  useEffect(() => {
+    if (loggedIn) {
+      if (!currentUser) {
+        setLoading(true);
+        auth(token).me().then(user => {
+          setCurrentUser(user);
+        }).finally(() => setLoading(false))
+      }
+
+      const localMovies = parseJSON(localStorage.getItem('movies'), []);
+
+      if (Array.isArray(localMovies) && localMovies.length) {
+        setMovies(localMovies);
+      } else {
+        setLoading(true);
+        moviesApi()
+          .getMovies()
+          .then(m => setMovies(m))
+          .catch(err => {
+            setSearchError({ ...searchError, movies: err });
+          })
+          .finally(() => setTimeout(() => setLoading(false), 500));
+      }
+
+      setLoading(true);
+      api(token)
+        .getMovies()
+        .then(m => {
+          localStorage.setItem('savedMovies', JSON.stringify(m));
+          setSavedMovies(m.filter(s => s.owner._id === currentUser._id));
+        })
+        .catch(err => {
+          setSearchError({ ...searchError, movies: err });
+        })
+        .finally(() => setTimeout(() => setLoading(false), 500));
+    }
+  }, [loggedIn, token]);
+
+  useEffect(() => {
+    localStorage.setItem('movies', JSON.stringify(movies));
+  }, [movies]);
+
+  useEffect(() => {
+    localStorage.setItem('savedMovies', JSON.stringify(savedMovies));
+  }, [savedMovies]);
+
+  const handleRegistration = async ({ email, name, password }) => {
+    try {
+      isLoading(true);
+      await auth().signup({ email, name, password });
+      await handleLogIn({ email, password });
+      navigate('/signin');
+    } catch (e) {
+      console.log({ e });
+      setSearchError({ ...searchError, signUp: e });
+    } finally {
+      setTimeout(() => isLoading(false), 500);
+    }
+  };
+
+  /**
+   * SignIn Handler
+   */
+  const handleLogIn = async payload => {
+    try {
+      isLoading(true);
+      const { token } = await auth().signin(payload);
+      setToken(token);
+      setLoggedIn(true);
+      navigate('/movies');
+    } catch (e) {
+      setSearchError({ ...searchError, signIn: e });
+    } finally {
+      setTimeout(() => isLoading(false), 500);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      isLoading(true);
+      await auth(localStorage.getItem("jwt")).signout();
+      setToken('');
+      setLoggedIn(false);
+      localStorage.setItem('moviesPage', '0');
+      localStorage.setItem('movies', JSON.stringify([]));
+      localStorage.setItem('savedMovies', JSON.stringify([]));
+      localStorage.setItem('filtredMovies', JSON.stringify([]));
+      localStorage.setItem(
+        'moviesSearch',
+        JSON.stringify({ s: '', shorts: '' }),
+      );
+    } catch (e) {
+      console.log({ e });
+    } finally {
+      isLoading(false);
+    }
+  };
+
+  /**
+   * UpdateUser Handler
+   */
+  const handleUpdateUser = async payload => {
+    try {
+      setIsProfileSaved(false);
+      isLoading(true);
+      const user = await auth(token).update(payload);
+      setCurrentUser(user);
+      setIsProfileSaved(true);
+    } catch (e) {
+      setSearchError({ ...searchError, profile: e });
+    } finally {
+      setTimeout(() => isLoading(false), 500);
+    }
+  };
+
+  const handleSaveMovie = async movie => {
+    try {
+      isLoading(true);
+      const savedMovie = await api(token).saveMovie(movie);
+      if (Array.isArray(savedMovies)) {
+        setSavedMovies([...savedMovies, savedMovie]);
+      } else {
+        setSavedMovies([savedMovie]);
+      }
+    } catch (e) {
+    } finally {
+      setTimeout(() => isLoading(false), 500);
+    }
+  };
+
+  const handleDeleteMovie = async movie => {
+    try {
+      const { _id } = movie;
+      isLoading(true);
+      await api(token).deleteMovie(_id);
+      if (Array.isArray(savedMovies)) {
+        setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
+      }
+    } catch (e) {
+
+      console.log({ e });
+      setSearchError({ ...searchError, movies: e });
+    } finally {
+      setTimeout(() => isLoading(false), 500);
+    }
+  };
+
+
+
+  const openBurgerMenu = () => {
+    setIsMenuOpen(true);
+  };
+
+  const closeBurgerMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  return (
+
+    <div className="page">
+      <div className="page__container">
+      <CurrentUserContext.Provider value={currentUser}>
+          <Routes>
+            <Route
+              path={mainPath}
+              element={
+                <>
+                  <Header openMenu={openBurgerMenu} />
+                  <Main />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path={moviesPath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <Movies
+                                           movies={movies}
+                                           savedMovies={savedMovies}
+                                           onSaveMovie={handleSaveMovie}
+                                           onDeleteMovie={handleDeleteMovie}
+                                           requestError={requestError}
+
+                      />
+                      <Footer />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={savedMoviesPath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <SavedMovies
+                    movies={savedMovies}
+                    loggedIn={loggedIn}
+                    onDeleteMovie={handleDeleteMovie}
+                    requestError={requestError}
+
+                      />
+                      <Footer />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={profilePath}
+              element={
+                <ProtectedRoute
+                  loggedIn={loggedIn}
+                  element={
+                    <>
+                      <Header openMenu={openBurgerMenu} />
+                      <Profile
+                        onLogOut={handleSignOut}
+                        onLoading={isLoading}
+                        isProfileSaved={isProfileSaved}
+                        requestError={requestError}
+                        onUpdateUser={handleUpdateUser}
+                      />
+                    </>
+                  }
+                />
+              }
+            />
+            <Route
+              path={registerPath}
+              element={
+                <Register
+                  onRegister={handleRegistration}
+                  onLoading={isLoading}
+                  requestError={requestError}
+                  loggedIn={loggedIn}
+                />
+              }
+            />
+
+            <Route
+              path={loginPath}
+              element={
+                <Login
+                  onLogin={handleLogIn}
+                  onLoading={isLoading}
+                  requestError={requestError}
+                  loggedIn={loggedIn}
+                />
+              }
+            />
+
+            <Route path={otherPath} element={<Error />} />
+          </Routes>
+          <BurgerMenu isOpen={isMenuOpen} onClose={closeBurgerMenu} />
+        </CurrentUserContext.Provider>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+/*
   const handleTokenCheck = useCallback(async () => {
     const token = localStorage.getItem('Authorized');
     try {
@@ -66,7 +385,7 @@ function App(props) {
 
 
 
-/*
+
   useEffect(() => {
     if (loggedIn) {
       api.getUserInfo()
@@ -205,7 +524,7 @@ const checkUser = () => {
     }
   }, [navigate, loggedIn]);
 */
-
+/*
 const getMovies = () => {
   moviesApi
     .getMovies()
@@ -296,7 +615,7 @@ useEffect(() => {
 
 
 
-  /*
+
   function handleUpdateUser(name, email) {
     setLoading(true);
     api
@@ -379,118 +698,3 @@ useEffect(() => {
       });
   }
 */
-  const openBurgerMenu = () => {
-    setIsMenuOpen(true);
-  };
-
-  const closeBurgerMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  return (
-
-    <div className="page">
-      <div className="page__container">
-      <CurrentUserContext.Provider value={currentUser}>
-          <Routes>
-            <Route
-              path={mainPath}
-              element={
-                <>
-                  <Header openMenu={openBurgerMenu} />
-                  <Main />
-                  <Footer />
-                </>
-              }
-            />
-            <Route
-              path={moviesPath}
-              element={
-                <ProtectedRoute
-                  loggedIn={loggedIn}
-                  element={
-                    <>
-                      <Header openMenu={openBurgerMenu} />
-                      <Movies
-                        savedMovies={movies}
-                        searchError={searchError}
-
-                      />
-                      <Footer />
-                    </>
-                  }
-                />
-              }
-            />
-            <Route
-              path={savedMoviesPath}
-              element={
-                <ProtectedRoute
-                  loggedIn={loggedIn}
-                  element={
-                    <>
-                      <Header openMenu={openBurgerMenu} />
-                      <SavedMovies
-                        savedMovies={savedMovies}
-
-                      />
-                      <Footer />
-                    </>
-                  }
-                />
-              }
-            />
-            <Route
-              path={profilePath}
-              element={
-                <ProtectedRoute
-                  loggedIn={loggedIn}
-                  element={
-                    <>
-                      <Header openMenu={openBurgerMenu} />
-                      <Profile
-                        onLogOut={handleSignOut}
-                        onLoading={isLoading}
-
-                        requestError={requestError}
-                        onUpdate={successfulUpdate}
-                      />
-                    </>
-                  }
-                />
-              }
-            />
-            <Route
-              path={registerPath}
-              element={
-                <Register
-                  onRegister={handleRegistration}
-                  onLoading={isLoading}
-                  requestError={requestError}
-                  loggedIn={loggedIn}
-                />
-              }
-            />
-
-            <Route
-              path={loginPath}
-              element={
-                <Login
-                  onLogin={handleLogIn}
-                  onLoading={isLoading}
-                  requestError={requestError}
-                  loggedIn={loggedIn}
-                />
-              }
-            />
-
-            <Route path={otherPath} element={<Error />} />
-          </Routes>
-          <BurgerMenu isOpen={isMenuOpen} onClose={closeBurgerMenu} />
-        </CurrentUserContext.Provider>
-      </div>
-    </div>
-  );
-}
-
-export default App;
