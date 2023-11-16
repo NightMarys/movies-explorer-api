@@ -5,17 +5,14 @@ class Api {
   }
 
   // Метод проверки успешности запроса
-  _getResponse(res) {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+  _getResponseData(res) {
+    return res.ok ? res.json() : res.json().then(res => Promise.reject(`${res.message}`));
   }
 
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
 
-    }).then(this._getResponse);
+    }).then(res => this._getResponseData(res))
   }
 
   // Редактирование профиля
@@ -28,7 +25,7 @@ class Api {
         name: data.name,
         email: data.email,
       }),
-    }).then(this._getResponse);
+    }).then(res => this._getResponseData(res))
   }
 
   getContent(token) {
@@ -49,7 +46,7 @@ class Api {
 
       headers: this._headers,
 
-    }).then(this._getResponse);
+    }).then(res => this._getResponseData(res))
   }
 
   addMovie(data) {
@@ -78,7 +75,7 @@ class Api {
       method: "DELETE",
       headers: this._headers,
       credentials: "include",
-    }).then(this._getResponse);
+    }).then(res => this._getResponseData(res))
   }
 }
 
