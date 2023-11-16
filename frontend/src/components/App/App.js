@@ -117,18 +117,17 @@ function App(props) {
     }, 500);
   }, [currentUser.isLoggedIn]);
 */
-  useEffect(() => {
-    if (loggedIn) {
-      api
-        .getUserInfo()
-        .then((data) => {
-          setCurrentUser(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      }
-      }, [loggedIn]);
+
+useEffect(() => {
+  if (loggedIn) {
+    api.getUserInfo()
+      .then((res) => {
+        setCurrentUser(res)
+      })
+      .catch((err) => {console.log(err)});
+    }
+}, [loggedIn]);
+
 
       const getMovies = () => {
         moviesApi
