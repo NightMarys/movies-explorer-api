@@ -414,10 +414,7 @@ useEffect(() => {
                       <Movies
                         savedMovies={movies}
                         searchError={searchError}
-                        onSearch={handleSearchMovies}
-                        isLoading={isLoading}
-                        onMovieAdd={addMovie}
-                        onMovieDelete={handleDeleteMovie}
+
                       />
                       <Footer />
                     </>
@@ -435,7 +432,7 @@ useEffect(() => {
                       <Header openMenu={openBurgerMenu} />
                       <SavedMovies
                         savedMovies={savedMovies}
-                        onMovieDelete={handleDeleteMovie}
+
                       />
                       <Footer />
                     </>
@@ -454,7 +451,7 @@ useEffect(() => {
                       <Profile
                         onLogOut={handleSignOut}
                         onLoading={isLoading}
-                        onProfile={handleUpdateUser}
+
                         requestError={requestError}
                         onUpdate={successfulUpdate}
                       />
