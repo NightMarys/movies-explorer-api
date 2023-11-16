@@ -144,7 +144,7 @@ function App(props) {
       console.log({ e });
       setSearchError({ ...searchError, signUp: e });
     } finally {
-      setTimeout(() => setLoading(false), 500);
+      isLoading(false);
     }
   };
 
@@ -158,7 +158,7 @@ function App(props) {
     } catch (e) {
       setSearchError({ ...searchError, signIn: e });
     } finally {
-      setTimeout(() => setLoading(false), 500);
+      isLoading(false);
     }
   };
 
