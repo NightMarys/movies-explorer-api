@@ -12,7 +12,7 @@ class Api {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
-  register({name, email, password}) {
+  register(data) {
     return fetch(`${this._baseUrl}/signup`, {
       method: "POST",
       headers: {
@@ -20,14 +20,14 @@ class Api {
       },
       credentials: "include",
       body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
+        name: data.name,
+        email: data.email,
+        password: data.password,
       }),
     }).then(this._getResponse);
   };
 
-  login({email, password}) {
+  login(data) {
     return fetch(`${this._baseUrl}/signin`, {
       method: "POST",
       headers: {
@@ -35,13 +35,13 @@ class Api {
       },
       credentials: "include",
       body: JSON.stringify({
-        email: email,
-        password: password,
+        email: data.email,
+        password: data.password,
       }),
     }).then(this._getResponse);
   };
 
-  logout = () => {
+  logout () {
     return fetch(`${this._baseUrl}/signout`, {
       method: "GET",
       headers: {
