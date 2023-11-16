@@ -1,12 +1,14 @@
 import React from "react";
 import "./SearchForm.css";
 import Checkbox from "../Checkbox/Checkbox";
+import { useLocation } from "react-router-dom";
+import moviesApi from "../../utils/MoviesApi";
 
 function SearchForm(props) {
   const [searchName, setSearchName] = React.useState("");
   const [searchError, setSearchError] = React.useState("");
 
-  const location = React.useLocation();
+  const location = useLocation();
 
   React.useEffect(() => {
     if (location.pathname === "/movies") {
@@ -31,11 +33,12 @@ function SearchForm(props) {
     } else {
       props.onSubmit(searchName);
     }
+
   };
 
   return (
     <div className="search-form">
-      <form className="search-form__search" onSubmit={handleSubmit} noValidate>
+      <form className="search-form__search" noValidate>
         <input
           id="movie-input"
           name="movie"
@@ -46,7 +49,7 @@ function SearchForm(props) {
           value={searchName || ""}
           onChange={handleChange}
         />
-        <button type="button" className="search-form__button"></button>
+        <button type="button" className="search-form__button" onClick={handleSubmit}></button>
       </form>
       <span className="search-form__error">{searchError}</span>
       <Checkbox

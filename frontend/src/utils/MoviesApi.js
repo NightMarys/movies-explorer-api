@@ -15,6 +15,7 @@ class ApiMovies {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.jwt}`
       },
     }).then(this._getResponse);
   }

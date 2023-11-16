@@ -117,9 +117,9 @@ function App(props) {
       });
   }
 
-  function handleRegistration(email, password) {
+  function handleRegistration(name, email, password) {
     auth
-      .register(email, password)
+      .register(name, email, password)
       .then(() => {
         // setInfoTooltipSuccessPopupOpen(true);
         setUserEmail(email);
@@ -172,16 +172,7 @@ function App(props) {
               element={
                 <ProtectedRoute
                   loggedIn={loggedIn}
-                  element={
-                    <>
-                      <Header openMenu={openBurgerMenu} />
-                      <Movies
-
-
-                      />
-                      <Footer />
-                    </>
-                  }
+                  element={Movies}
                 />
               }
             />

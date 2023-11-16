@@ -1,6 +1,6 @@
 class Api {
   constructor({ baseUrl, headers }) {
-    this._baseUrl = baseUrl.mainApi;
+    this._baseUrl = baseUrl;
     this._headers = headers;
   }
 
@@ -11,6 +11,10 @@ class Api {
 
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.jwt}`
+      },
 
     }).then(res => this._getResponseData(res))
   }
@@ -44,7 +48,10 @@ class Api {
   getSavedMovies() {
     return fetch(`${this._baseUrl}/movies`, {
 
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.jwt}`
+      },
 
     }).then(res => this._getResponseData(res))
   }
