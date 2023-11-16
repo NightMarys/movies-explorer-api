@@ -170,7 +170,7 @@ function App(props) {
 
   function handleLogIn(email, password) {
     setLoading(true);
-    api
+    auth
       .login(email, password)
       .then((data) => {
         localStorage.setItem("jwt", data.token);
@@ -195,7 +195,7 @@ function App(props) {
 
   function handleRegistration(name, email, password) {
     setLoading(true);
-    api
+    auth
       .register(name, email, password)
       .then(() => {
         handleLogIn(email, password);
@@ -214,7 +214,7 @@ function App(props) {
   }
 
   function handleSignOut() {
-    api
+    auth
       .logout()
       .then((res) => {
         setLoggedIn(false);
