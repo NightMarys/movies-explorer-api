@@ -1,8 +1,7 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 import Navigation from "../Navigation/Navigation";
-import ROUTS from "../../utils/constants";
 
 function Footer() {
   return (

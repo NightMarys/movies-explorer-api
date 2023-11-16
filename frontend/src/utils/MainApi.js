@@ -12,6 +12,46 @@ class Api {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
+  register({name, email, password}) {
+    return fetch(`${this._baseUrl}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+      }),
+    }).then(this._getResponse);
+  };
+
+  login({email, password}) {
+    return fetch(`${this._baseUrl}/signin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    }).then(this._getResponse);
+  };
+
+  logout = () => {
+    return fetch(`${this._baseUrl}/signout`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }).then(this._getResponse);
+  };
+
+
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
       headers: this._headers,

@@ -170,7 +170,7 @@ function App(props) {
 
   function handleLogIn(email, password) {
     setLoading(true);
-    auth
+    api
       .login(email, password)
       .then((data) => {
         localStorage.setItem("jwt", data.token);
@@ -195,7 +195,7 @@ function App(props) {
 
   function handleRegistration(name, email, password) {
     setLoading(true);
-    auth
+    api
       .register(name, email, password)
       .then(() => {
         handleLogIn(email, password);
@@ -214,7 +214,7 @@ function App(props) {
   }
 
   function handleSignOut() {
-    auth
+    api
       .logout()
       .then((res) => {
         setLoggedIn(false);
@@ -318,9 +318,10 @@ function App(props) {
   };
 
   return (
+
     <div className="page">
       <div className="page__container">
-        <CurrentUserContext.Provider value={currentUser}>
+      <CurrentUserContext.Provider value={currentUser}>
           <Routes>
             <Route
               path={mainPath}
@@ -341,7 +342,7 @@ function App(props) {
                     <>
                       <Header openMenu={openBurgerMenu} />
                       <Movies
-                        savedMovies={savedMovies}
+                        savedMovies={movies}
                         searchError={searchError}
                         onSearch={handleSearchMovies}
                         isLoading={isLoading}

@@ -20,7 +20,6 @@ function Header(props) {
   }`;
 
   return (
-    <>
       <header className={headerClass}>
         <Link className="header__link header__link_logo" to="/">
           <img className="header__logo" src={logo} alt="Логотип" />
@@ -82,7 +81,6 @@ function Header(props) {
           </>
         )}
       </header>
-    </>
   );
 }
 
