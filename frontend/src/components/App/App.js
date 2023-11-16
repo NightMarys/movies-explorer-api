@@ -53,8 +53,8 @@ function App(props) {
     if (loggedIn) {
       api
         .getUserInfo()
-        .then((data) => {
-          setCurrentUser(data);
+        .then((res) => {
+          setCurrentUser(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -65,7 +65,7 @@ function App(props) {
   useEffect(() => {
     if (loggedIn) {
       api
-        .getInitialCards()
+        .getSavedMovies()
         .then((data) => {
           setMovies(data);
         })
