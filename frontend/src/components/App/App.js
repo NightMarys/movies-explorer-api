@@ -42,7 +42,7 @@ function App(props) {
   const [isPreloaderActive, setPreloaderClass] = useState(true);
 
   const navigate = useNavigate();
-
+/*
   const handleTokenCheck = useCallback(async () => {
     const token = localStorage.getItem('Authorized');
     try {
@@ -63,7 +63,10 @@ function App(props) {
   useEffect(() => {
     handleTokenCheck();
   }, [loggedIn, handleTokenCheck]);
+*/
 
+
+/*
   useEffect(() => {
     if (loggedIn) {
       api.getUserInfo()
@@ -113,7 +116,7 @@ function App(props) {
       setLoading(false);
     }, 500);
   }, [currentUser.isLoggedIn]);
-/*
+*/
   useEffect(() => {
     if (loggedIn) {
       api
@@ -127,18 +130,46 @@ function App(props) {
       }
       }, [loggedIn]);
 
-      api
-        .getSavedMovies()
-        .then((res) => {
-          localStorage.setItem("SavedMovies", JSON.stringify(res));
-          setSavedMovies(JSON.parse(localStorage.getItem("SavedMovies")));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const getMovies = () => {
+        moviesApi
+          .getMovies()
+          .then((movies) => {
+            setMovies(movies);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
 
-    }
-  }, [loggedIn]);
+      useEffect(() => {
+        if (currentUser.isLoggedIn) {
+          getMovies();
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
+        }
+      }, [currentUser.isLoggedIn]);
+
+      const getSavedMovies = () => {
+        api
+          .getMovies()
+          .then((movies) => {
+            setSavedMovies(movies);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+
+      useEffect(() => {
+        if (currentUser.isLoggedIn) {
+          getSavedMovies();
+        }
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      }, [currentUser.isLoggedIn])
+
 
 
   useEffect(() => {
@@ -166,7 +197,7 @@ function App(props) {
         });
     }
   }, [navigate, loggedIn]);
-*/
+
 
   function handleLogIn(email, password) {
     setLoading(true);
