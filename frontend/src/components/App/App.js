@@ -181,7 +181,7 @@ function App(props) {
           if (data) {
             setLoggedIn(true);
             setCurrentUser(data);
-            navigate("/movies");
+            navigate("/");
           }
         })
         .catch((err) => {
@@ -207,7 +207,7 @@ function App(props) {
         localStorage.setItem("jwt", data.token);
         setCurrentUser(data);
         setLoggedIn(true);
-        navigate("/movies");
+        navigate("/");
         setRequestError("");
       })
       .catch((err) => {
