@@ -84,7 +84,7 @@ function App(props) {
           if (data) {
             setUserEmail(data.data.email);
             setLoggedIn(true);
-            navigate("/");
+            navigate("/movies");
           }
         })
         .catch((err) => {
@@ -105,7 +105,7 @@ function App(props) {
         localStorage.setItem("jwt", res.token);
         setUserEmail(email);
         setLoggedIn(true);
-        navigate("/");
+        navigate("/movies");
       })
       .catch((err) => {
         if (err === 400) {
