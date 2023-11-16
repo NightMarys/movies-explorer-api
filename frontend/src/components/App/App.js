@@ -106,8 +106,8 @@ function App(props) {
         moviesApi()
           .getMovies()
           .then(m => setMovies(m))
-          .catch(err => {
-            setSearchError({ ...searchError, movies: err });
+          .catch((err) => {
+            console.log(err);
           })
           .finally(() => setTimeout(() => setLoading(false), 500));
       }
@@ -119,8 +119,8 @@ function App(props) {
           localStorage.setItem('savedMovies', JSON.stringify(m));
           setSavedMovies(m.filter(s => s.owner._id === currentUser._id));
         })
-        .catch(err => {
-          setSearchError({ ...searchError, movies: err });
+        .catch((err) => {
+          console.log(err);
         })
         .finally(() => setTimeout(() => setLoading(false), 500));
     }
@@ -140,9 +140,8 @@ function App(props) {
       await auth().signup({ email, name, password });
       await handleLogIn({ email, password });
       navigate('/signin');
-    } catch (e) {
-      console.log({ e });
-      setSearchError({ ...searchError, signUp: e });
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false)
     }
@@ -155,8 +154,8 @@ function App(props) {
       setToken(token);
       setLoggedIn(true);
       navigate('/movies');
-    } catch (e) {
-      setSearchError({ ...searchError, signIn: e });
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false)
     }
@@ -176,8 +175,8 @@ function App(props) {
         'moviesSearch',
         JSON.stringify({ s: '', shorts: '' }),
       );
-    } catch (e) {
-      console.log({ e });
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false)
     }
@@ -190,8 +189,8 @@ function App(props) {
       const user = await auth(token).update(payload);
       setCurrentUser(user);
       setIsProfileSaved(true);
-    } catch (e) {
-      setSearchError({ ...searchError, profile: e });
+    } catch (err) {
+      console.error(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
@@ -206,7 +205,8 @@ function App(props) {
       } else {
         setSavedMovies([savedMovie]);
       }
-    } catch (e) {
+    } catch (err) {
+      console.error(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
@@ -220,10 +220,8 @@ function App(props) {
       if (Array.isArray(savedMovies)) {
         setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
       }
-    } catch (e) {
-
-      console.log({ e });
-      setSearchError({ ...searchError, movies: e });
+    } catch (err) {
+      console.error(err);
     } finally {
       setTimeout(() => setLoading(false), 500);
     }
