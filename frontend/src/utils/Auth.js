@@ -38,7 +38,7 @@ export const login = (email, password) => {
   }).then(checkError);
 };
 
-/*
+
 export const getToken = () => {
   const token = localStorage.getItem("jwt");
   return fetch(`${BASE_URL}/users/me`, {
@@ -50,7 +50,7 @@ export const getToken = () => {
     credentials: "include",
   }).then(checkError);
 };
-*/
+
 export const logout = () => {
   return fetch(`${this._baseUrl}/signout`, {
     method: "GET",
