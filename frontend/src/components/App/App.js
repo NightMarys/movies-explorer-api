@@ -144,13 +144,10 @@ function App(props) {
       console.log({ e });
       setSearchError({ ...searchError, signUp: e });
     } finally {
-      setTimeout(() => isLoading(false), 500);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
-  /**
-   * SignIn Handler
-   */
   const handleLogIn = async payload => {
     try {
       isLoading(true);
@@ -161,7 +158,7 @@ function App(props) {
     } catch (e) {
       setSearchError({ ...searchError, signIn: e });
     } finally {
-      setTimeout(() => isLoading(false), 500);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
@@ -186,9 +183,6 @@ function App(props) {
     }
   };
 
-  /**
-   * UpdateUser Handler
-   */
   const handleUpdateUser = async payload => {
     try {
       setIsProfileSaved(false);
