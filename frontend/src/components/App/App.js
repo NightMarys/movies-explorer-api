@@ -40,185 +40,108 @@ function App(props) {
   const [successfulUpdate, setSuccessfulUpdate] = useState(false);
   const [searchError, setSearchError] = useState(false);
   const [isPreloaderActive, setPreloaderClass] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem("jwt") || '');
+  // const [token, setToken] = useState(localStorage.getItem("jwt") || '');
   const [isProfileSaved, setIsProfileSaved] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userPass, setUserPass] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-
-  const parseJSON = (string, defaultValue) => {
-    try {
-
-      if (typeof string !== 'string') {
-        throw new Error('not a string')
-      }
-
-      return JSON.parse(string)
-    } catch (e) {
-      console.log({ e })
-      return defaultValue
-    }
-  }
-  useEffect(() => {
-    localStorage.setItem("jwt", token);
-  }, [token]);
-
-  useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const user = await auth(token).me();
-        setCurrentUser(user);
-        setLoggedIn(true);
-        navigate(`${location.pathname}${location.search}`, { replace: true });
-      } catch (e) {
-        if (e.status === 404) {
-          localStorage.removeItem("jwt");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!loggedIn && token) {
-      checkToken();
-    }
-
-    setLoading(false);
-  }, [loggedIn, token]);
 
 
 
   useEffect(() => {
     if (loggedIn) {
-      if (!currentUser) {
-        auth(token).me().then(user => {
-          setCurrentUser(user);
-        }).finally(() => setLoading(false))
-      }
-
-      const localMovies = parseJSON(localStorage.getItem('movies'), []);
-
-      if (Array.isArray(localMovies) && localMovies.length) {
-        setMovies(localMovies);
-      } else {
-        moviesApi()
-          .getMovies()
-          .then(m => setMovies(m))
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => setTimeout(() => setLoading(false), 500));
-      }
-
-
-      api(token)
-        .getMovies()
-        .then(m => {
-          localStorage.setItem('savedMovies', JSON.stringify(m));
-          setSavedMovies(m.filter(s => s.owner._id === currentUser._id));
+      api
+        .getUserInfo()
+        .then((data) => {
+          setCurrentUser(data);
         })
         .catch((err) => {
           console.log(err);
+        });
+    }
+  }, [loggedIn]);
+
+  useEffect(() => {
+    if (loggedIn) {
+      api
+        .getInitialCards()
+        .then((data) => {
+          setMovies(data);
         })
-        .finally(() => setTimeout(() => setLoading(false), 500));
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }, [loggedIn, token]);
+  }, [loggedIn]);
 
   useEffect(() => {
-    localStorage.setItem('movies', JSON.stringify(movies));
-  }, [movies]);
-
-  useEffect(() => {
-    localStorage.setItem('savedMovies', JSON.stringify(savedMovies));
-  }, [savedMovies]);
-
-  const handleRegistration = async ({ email, name, password }) => {
-    try {
-      await auth().signup({ email, name, password });
-      await handleLogIn({ email, password });
-      navigate('/signin');
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false)
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      auth
+        .getToken(token)
+        .then((data) => {
+          if (data) {
+            setUserEmail(data.data.email);
+            setLoggedIn(true);
+            navigate("/");
+          }
+        })
+        .catch((err) => {
+          if (err === 400) {
+            console.log("Токен не передан или передан не в том формате");
+          }
+          if (err === 401) {
+            console.log("Переданный токен некорректен");
+          }
+        });
     }
-  };
+  }, [navigate, loggedIn]);
 
-  const handleLogIn = async payload => {
-    try {
-      const { token } = await auth().signin(payload);
-      setToken(token);
-      setLoggedIn(true);
-      navigate('/movies');
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false)
-    }
-  };
+  function handleLogIn(email, password) {
+    auth
+      .login(email, password)
+      .then((res) => {
+        localStorage.setItem("jwt", res.token);
+        setUserEmail(email);
+        setLoggedIn(true);
+        navigate("/");
+      })
+      .catch((err) => {
+        if (err === 400) {
+          console.log("не передано одно из полей");
+        }
+        if (err === 401) {
+          console.log("пользователь с email не найден");
+        }
+      });
+  }
 
-  const handleSignOut = async () => {
-    try {
-      await auth(localStorage.getItem("jwt")).signout();
-      setToken('');
-      setLoggedIn(false);
-      localStorage.setItem('moviesPage', '0');
-      localStorage.setItem('movies', JSON.stringify([]));
-      localStorage.setItem('savedMovies', JSON.stringify([]));
-      localStorage.setItem('filtredMovies', JSON.stringify([]));
-      localStorage.setItem(
-        'moviesSearch',
-        JSON.stringify({ s: '', shorts: '' }),
-      );
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false)
-    }
-  };
-
-  const handleUpdateUser = async payload => {
-    try {
-      setIsProfileSaved(false);
-      const user = await auth(token).update(payload);
-      setCurrentUser(user);
-      setIsProfileSaved(true);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setTimeout(() => setLoading(false), 500);
-    }
-  };
-
-  const handleSaveMovie = async movie => {
-    try {
-      const savedMovie = await api(token).saveMovie(movie);
-      if (Array.isArray(savedMovies)) {
-        setSavedMovies([...savedMovies, savedMovie]);
-      } else {
-        setSavedMovies([savedMovie]);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setTimeout(() => setLoading(false), 500);
-    }
-  };
-
-  const handleDeleteMovie = async movie => {
-    try {
-      const { _id } = movie;
-      await api(token).deleteMovie(_id);
-      if (Array.isArray(savedMovies)) {
-        setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setTimeout(() => setLoading(false), 500);
-    }
-  };
+  function handleRegistration(email, password) {
+    auth
+      .register(email, password)
+      .then(() => {
+        // setInfoTooltipSuccessPopupOpen(true);
+        setUserEmail(email);
+        setUserPass(password);
+        navigate("/signin");
+      })
+      .catch((err) => {
+        // setInfoTooltipFailPopupOpen(true);
+        if (err === 400) {
+          console.log("некорректно заполнено одно из полей");
+        }
+      });
+  }
 
 
+
+  function handleSignOut() {
+    localStorage.removeItem("jwt");
+    setUserEmail("");
+    setUserPass("");
+    setLoggedIn(false);
+  }
 
   const openBurgerMenu = () => {
     setIsMenuOpen(true);
@@ -253,11 +176,7 @@ function App(props) {
                     <>
                       <Header openMenu={openBurgerMenu} />
                       <Movies
-                                           movies={movies}
-                                           savedMovies={savedMovies}
-                                           onSaveMovie={handleSaveMovie}
-                                           onDeleteMovie={handleDeleteMovie}
-                                           requestError={requestError}
+
 
                       />
                       <Footer />
@@ -275,10 +194,7 @@ function App(props) {
                     <>
                       <Header openMenu={openBurgerMenu} />
                       <SavedMovies
-                    movies={savedMovies}
-                    loggedIn={loggedIn}
-                    onDeleteMovie={handleDeleteMovie}
-                    requestError={requestError}
+
 
                       />
                       <Footer />
@@ -300,7 +216,7 @@ function App(props) {
                         onLoading={isLoading}
                         isProfileSaved={isProfileSaved}
                         requestError={requestError}
-                        onUpdateUser={handleUpdateUser}
+
                       />
                     </>
                   }
@@ -680,4 +596,182 @@ useEffect(() => {
         console.log(err);
       });
   }
+*/
+
+
+
+  /*
+  const parseJSON = (string, defaultValue) => {
+    try {
+
+      if (typeof string !== 'string') {
+        throw new Error('not a string')
+      }
+
+      return JSON.parse(string)
+    } catch (e) {
+      console.log({ e })
+      return defaultValue
+    }
+  }
+  useEffect(() => {
+    localStorage.setItem("jwt", token);
+  }, [token]);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const user = await auth(token).me();
+        setCurrentUser(user);
+        setLoggedIn(true);
+        navigate(`${location.pathname}${location.search}`, { replace: true });
+      } catch (e) {
+        if (e.status === 404) {
+          localStorage.removeItem("jwt");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!loggedIn && token) {
+      checkToken();
+    }
+
+    setLoading(false);
+  }, [loggedIn, token]);
+
+
+
+  useEffect(() => {
+    if (loggedIn) {
+      if (!currentUser) {
+        auth(token).me().then(user => {
+          setCurrentUser(user);
+        }).finally(() => setLoading(false))
+      }
+
+      const localMovies = parseJSON(localStorage.getItem('movies'), []);
+
+      if (Array.isArray(localMovies) && localMovies.length) {
+        setMovies(localMovies);
+      } else {
+        moviesApi()
+          .getMovies()
+          .then(m => setMovies(m))
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => setTimeout(() => setLoading(false), 500));
+      }
+
+
+      api(token)
+        .getMovies()
+        .then(m => {
+          localStorage.setItem('savedMovies', JSON.stringify(m));
+          setSavedMovies(m.filter(s => s.owner._id === currentUser._id));
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => setTimeout(() => setLoading(false), 500));
+    }
+  }, [loggedIn, token]);
+
+  useEffect(() => {
+    localStorage.setItem('movies', JSON.stringify(movies));
+  }, [movies]);
+
+  useEffect(() => {
+    localStorage.setItem('savedMovies', JSON.stringify(savedMovies));
+  }, [savedMovies]);
+
+  const handleRegistration = async ({ email, name, password }) => {
+    try {
+      await auth().signup({ email, name, password });
+      await handleLogIn({ email, password });
+      navigate('/signin');
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  const handleLogIn = async payload => {
+    try {
+      const { token } = await auth().signin(payload);
+      setToken(token);
+      setLoggedIn(true);
+      navigate('/movies');
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await auth(localStorage.getItem("jwt")).signout();
+      setToken('');
+      setLoggedIn(false);
+      localStorage.setItem('moviesPage', '0');
+      localStorage.setItem('movies', JSON.stringify([]));
+      localStorage.setItem('savedMovies', JSON.stringify([]));
+      localStorage.setItem('filtredMovies', JSON.stringify([]));
+      localStorage.setItem(
+        'moviesSearch',
+        JSON.stringify({ s: '', shorts: '' }),
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  const handleUpdateUser = async payload => {
+    try {
+      setIsProfileSaved(false);
+      const user = await auth(token).update(payload);
+      setCurrentUser(user);
+      setIsProfileSaved(true);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setTimeout(() => setLoading(false), 500);
+    }
+  };
+
+  const handleSaveMovie = async movie => {
+    try {
+      const savedMovie = await api(token).saveMovie(movie);
+      if (Array.isArray(savedMovies)) {
+        setSavedMovies([...savedMovies, savedMovie]);
+      } else {
+        setSavedMovies([savedMovie]);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setTimeout(() => setLoading(false), 500);
+    }
+  };
+
+  const handleDeleteMovie = async movie => {
+    try {
+      const { _id } = movie;
+      await api(token).deleteMovie(_id);
+      if (Array.isArray(savedMovies)) {
+        setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setTimeout(() => setLoading(false), 500);
+    }
+  };
+
 */
