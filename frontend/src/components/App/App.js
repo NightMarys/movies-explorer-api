@@ -42,7 +42,7 @@ function App(props) {
   const [isPreloaderActive, setPreloaderClass] = useState(true);
 
   const navigate = useNavigate();
-/*
+
   const handleTokenCheck = useCallback(async () => {
     const token = localStorage.getItem('Authorized');
     try {
@@ -63,7 +63,7 @@ function App(props) {
   useEffect(() => {
     handleTokenCheck();
   }, [loggedIn, handleTokenCheck]);
-*/
+
 
 
 /*
@@ -118,7 +118,7 @@ function App(props) {
   }, [currentUser.isLoggedIn]);
 */
 
-
+/*
 const checkUser = () => {
   api
     .getUserInfo()
@@ -204,27 +204,19 @@ const checkUser = () => {
         });
     }
   }, [navigate, loggedIn]);
-
+*/
 
   function handleLogIn(email, password) {
     setLoading(true);
     auth
       .login(email, password)
       .then((data) => {
-        localStorage.setItem("jwt", data.token);
-        setCurrentUser(data);
         setLoggedIn(true);
-        navigate("/");
+        navigate("/movies", {replace: true});
         setRequestError("");
       })
       .catch((err) => {
         setRequestError(err);
-        if (err === 400) {
-          console.log("не передано одно из полей");
-        }
-        if (err === 401) {
-          console.log("пользователь с email не найден");
-        }
       })
       .finally(() => {
         setLoading(false);
@@ -237,14 +229,11 @@ const checkUser = () => {
       .register(name, email, password)
       .then(() => {
         handleLogIn(email, password);
-        navigate("/signin");
+        navigate("/movies", {replace: true});
         setRequestError("");
       })
       .catch((err) => {
         setRequestError(err);
-        if (err === 400) {
-          console.log("некорректно заполнено одно из полей");
-        }
       })
       .finally(() => {
         setLoading(false);
