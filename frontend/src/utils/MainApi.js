@@ -14,9 +14,7 @@ class Api {
 
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
-      method: 'GET',
-      credentials: "include",
+
     }).then(this._getResponse);
   }
 
@@ -48,9 +46,9 @@ class Api {
 
   getSavedMovies() {
     return fetch(`${this._baseUrl}/movies`, {
-      method: "GET",
+
       headers: this._headers,
-      credentials: "include",
+
     }).then(this._getResponse);
   }
 
