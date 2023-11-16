@@ -65,7 +65,6 @@ function App(props) {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        setLoading(true);
         const user = await auth(token).me();
         setCurrentUser(user);
         setLoggedIn(true);
@@ -91,7 +90,6 @@ function App(props) {
   useEffect(() => {
     if (loggedIn) {
       if (!currentUser) {
-        setLoading(true);
         auth(token).me().then(user => {
           setCurrentUser(user);
         }).finally(() => setLoading(false))
@@ -102,7 +100,6 @@ function App(props) {
       if (Array.isArray(localMovies) && localMovies.length) {
         setMovies(localMovies);
       } else {
-        setLoading(true);
         moviesApi()
           .getMovies()
           .then(m => setMovies(m))
@@ -112,7 +109,7 @@ function App(props) {
           .finally(() => setTimeout(() => setLoading(false), 500));
       }
 
-      setLoading(true);
+
       api(token)
         .getMovies()
         .then(m => {
@@ -136,7 +133,6 @@ function App(props) {
 
   const handleRegistration = async ({ email, name, password }) => {
     try {
-      isLoading(true);
       await auth().signup({ email, name, password });
       await handleLogIn({ email, password });
       navigate('/signin');
@@ -149,7 +145,6 @@ function App(props) {
 
   const handleLogIn = async payload => {
     try {
-      isLoading(true);
       const { token } = await auth().signin(payload);
       setToken(token);
       setLoggedIn(true);
@@ -163,7 +158,6 @@ function App(props) {
 
   const handleSignOut = async () => {
     try {
-      isLoading(true);
       await auth(localStorage.getItem("jwt")).signout();
       setToken('');
       setLoggedIn(false);
@@ -185,7 +179,6 @@ function App(props) {
   const handleUpdateUser = async payload => {
     try {
       setIsProfileSaved(false);
-      isLoading(true);
       const user = await auth(token).update(payload);
       setCurrentUser(user);
       setIsProfileSaved(true);
@@ -198,7 +191,6 @@ function App(props) {
 
   const handleSaveMovie = async movie => {
     try {
-      isLoading(true);
       const savedMovie = await api(token).saveMovie(movie);
       if (Array.isArray(savedMovies)) {
         setSavedMovies([...savedMovies, savedMovie]);
@@ -215,7 +207,6 @@ function App(props) {
   const handleDeleteMovie = async movie => {
     try {
       const { _id } = movie;
-      isLoading(true);
       await api(token).deleteMovie(_id);
       if (Array.isArray(savedMovies)) {
         setSavedMovies([...savedMovies.filter(v => v._id !== _id)]);
