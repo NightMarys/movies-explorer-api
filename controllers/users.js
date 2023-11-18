@@ -122,7 +122,8 @@ module.exports.updateProfile = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findOne({ email, password })
+  return User.findOne({ email })
+    .select("+password")
     .then((user) => {
       if (!user) {
         return Promise.reject(
