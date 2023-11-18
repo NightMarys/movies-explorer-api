@@ -119,7 +119,8 @@ function Movies(props) {
     },
     [foundMovies]
   );
-    return (
+
+  return (
     <main className="content">
       <SearchForm
         onSubmit={handleSearchSubmit}
@@ -128,7 +129,7 @@ function Movies(props) {
         isFilterOn={isFilterOn}
       />
       <MoviesCardList
-        moviesList={moviesList}
+        movies={moviesList}
         moviesNotFound={moviesNotFound}
         searchError={props.searchError}
         isLoading={props.isLoading}

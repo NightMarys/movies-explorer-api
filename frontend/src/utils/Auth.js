@@ -51,6 +51,7 @@ export const getToken = () => {
   }).then(checkError);
 };
 
+
 export const logout = () => {
   return fetch(`${this._baseUrl}/signout`, {
     method: "GET",

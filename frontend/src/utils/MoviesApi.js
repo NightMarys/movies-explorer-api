@@ -11,11 +11,10 @@ class ApiMovies {
   }
 
   getMovies() {
-    return fetch(`${this._baseUrl}/movies`, {
+    return fetch(this._baseUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.jwt}`
       },
     }).then(this._getResponse);
   }

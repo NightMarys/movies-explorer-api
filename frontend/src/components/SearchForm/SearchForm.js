@@ -2,7 +2,6 @@ import React from "react";
 import "./SearchForm.css";
 import Checkbox from "../Checkbox/Checkbox";
 import { useLocation } from "react-router-dom";
-import moviesApi from "../../utils/MoviesApi";
 
 function SearchForm(props) {
   const [searchName, setSearchName] = React.useState("");
@@ -33,7 +32,6 @@ function SearchForm(props) {
     } else {
       props.onSubmit(searchName);
     }
-
   };
 
   return (
@@ -49,7 +47,11 @@ function SearchForm(props) {
           value={searchName || ""}
           onChange={handleChange}
         />
-        <button type="button" className="search-form__button" onClick={handleSubmit}></button>
+        <button
+          type="button"
+          className="search-form__button"
+          onClick={handleSubmit}
+        ></button>
       </form>
       <span className="search-form__error">{searchError}</span>
       <Checkbox
