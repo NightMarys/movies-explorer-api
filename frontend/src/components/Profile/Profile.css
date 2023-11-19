@@ -18,6 +18,7 @@
 .profile__form {
     display: flex;
     flex-direction: column;
+    width: 410px;
 }
 
 .profile__input-list {
@@ -164,7 +165,12 @@ opacity: 0.2;
 @media screen and (max-width: 568px) {
   .profile {
     padding: 0 30px;
-}
+  }
+
+  .profile__form{
+    width: 100%;
+  }
+
     .profile__button {
         font-size: 12px;
         line-height: 1.21;
