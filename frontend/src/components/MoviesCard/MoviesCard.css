@@ -83,7 +83,7 @@
   opacity: 0.8;
 }
 
-@media screen and (max-width: 900) {
+@media screen and (max-width: 900px) {
 
   .movies__image {
     width: 339px;
